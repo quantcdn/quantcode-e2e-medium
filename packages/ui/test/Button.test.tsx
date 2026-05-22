@@ -1,9 +1,11 @@
-import { describe, test, expect } from "bun:test"
-import { render } from "@testing-library/react"
+import { describe, test, expect, afterEach } from "bun:test"
+import { render, cleanup } from "@testing-library/react"
 import { Button } from "../src/components/Button/Button"
 import React from "react"
 
 describe("Button", () => {
+  afterEach(() => cleanup())
+
   test("renders with text", () => {
     const { getByText } = render(<Button>Click me</Button>)
     expect(getByText("Click me")).toBeDefined()

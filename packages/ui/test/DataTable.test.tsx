@@ -1,5 +1,5 @@
-import { describe, test, expect } from "bun:test"
-import { render, fireEvent } from "@testing-library/react"
+import { describe, test, expect, afterEach } from "bun:test"
+import { render, fireEvent, cleanup } from "@testing-library/react"
 import { DataTable } from "../src/components/DataTable/DataTable"
 import React from "react"
 
@@ -15,6 +15,8 @@ const columns = [
 ]
 
 describe("DataTable", () => {
+  afterEach(() => cleanup())
+
   test("renders all rows", () => {
     const { getByText } = render(<DataTable data={data} columns={columns} />)
     expect(getByText("Alice")).toBeDefined()

@@ -8,7 +8,7 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "bun test --recursive",
+    "test": "bun test packages/utils/test packages/ui/test apps/web/test --preload ./packages/ui/test/setup.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
@@ -16,6 +16,10 @@
     "bun-types": "latest",
     "@types/react": "^18.3.0",
     "react": "^18.3.0",
-    "react-dom": "^18.3.0"
+    "react-dom": "^18.3.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/jest-dom": "^6.4.0",
+    "happy-dom": "^14.0.0",
+    "@happy-dom/global-registrator": "^14.0.0"
   }
 }
