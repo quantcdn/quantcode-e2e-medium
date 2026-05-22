@@ -1,0 +1,13 @@
+{
+  "name": "@e2e/web",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@e2e/ui": "workspace:*",
+    "@e2e/utils": "workspace:*",
+    "react": "^18.3.0"
+  }
+}

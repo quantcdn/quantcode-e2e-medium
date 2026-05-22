@@ -1,0 +1,12 @@
+{
+  "name": "@e2e/utils",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "react": "^18.3.0"
+  }
+}

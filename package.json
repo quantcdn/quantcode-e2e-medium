@@ -1,0 +1,21 @@
+{
+  "name": "quantcode-e2e-medium",
+  "version": "1.0.0",
+  "description": "E2E test corpus (Tier 3) — medium React monorepo for QuantCode autonomous agent testing",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "bun test --recursive",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "bun-types": "latest",
+    "@types/react": "^18.3.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  }
+}
