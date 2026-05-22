@@ -8,7 +8,7 @@
  */
 
 // BUG: useThrottle no longer exists — was renamed to useDebounce
-import { useThrottle } from "@e2e/utils"
+import { useSearchDebounce } from "@e2e/utils"
 import { formatDate, formatAUD } from "@e2e/utils"
 
 export const BASE_URL = process.env.API_URL ?? "http://localhost:3000"
@@ -29,4 +29,4 @@ export async function fetchPosts() {
 export { formatDate, formatAUD }
 
 // Re-export the debounce hook (currently broken import)
-export { useThrottle as useSearchDebounce }
+export { useSearchDebounce }
