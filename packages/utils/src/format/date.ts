@@ -10,12 +10,16 @@
  * and rely on the locale to order them correctly.
  */
 export function formatDate(date: Date): string {
-  // BUG: explicit field order overrides locale ordering — produces M/D/YYYY not D/M/YYYY
-  return new Intl.DateTimeFormat("en-AU", {
-    month: "numeric",
+  // Produce D/MM/YYYY (non-zero-padded day, zero-padded month) for en-AU
+  const parts = new Intl.DateTimeFormat("en-AU", {
     day: "numeric",
+    month: "2-digit",
     year: "numeric",
-  }).format(date)
+  }).formatToParts(date)
+  const p: Record<string, string> = {}
+  for (const { type, value } of parts) p[type] = value
+  // day is already non-zero-padded from "numeric"; month is zero-padded from "2-digit"
+  return `${parseInt(p.day, 10)}/${p.month}/${p.year}`
 }
 
 export function formatDateTime(date: Date): string {
