@@ -1,2 +1,3 @@
 [test]
-environment = "happy-dom"
+environment = "jsdom"
+preload = ["./packages/ui/test/setup.ts"]
