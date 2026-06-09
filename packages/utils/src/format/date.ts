@@ -9,13 +9,17 @@
  * produces DD/MM/YYYY, or explicitly set `day: 'numeric', month: 'numeric', year: 'numeric'`
  * and rely on the locale to order them correctly.
  */
+const _dateFormatter = new Intl.DateTimeFormat("en-AU", {
+  day: "numeric",
+  month: "numeric",
+  year: "numeric",
+})
+
 export function formatDate(date: Date): string {
-  // BUG: explicit field order overrides locale ordering — produces M/D/YYYY not D/M/YYYY
-  return new Intl.DateTimeFormat("en-AU", {
-    month: "numeric",
-    day: "numeric",
-    year: "numeric",
-  }).format(date)
+  const parts = _dateFormatter.formatToParts(date)
+  const p: Record<string, string> = {}
+  for (const { type, value } of parts) p[type] = value
+  return `${parseInt(p.day)}/${p.month}/${p.year}`
 }
 
 export function formatDateTime(date: Date): string {
