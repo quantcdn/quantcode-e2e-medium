@@ -28,14 +28,16 @@ export function DataTable<T extends Record<string, unknown>>({ data, columns }: 
   const [sortKey, setSortKey] = useState<keyof T | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>("asc")
 
-  // BUG: stale closure — sortDir is captured at handler creation time
   const handleSort = (key: keyof T) => {
-    if (sortKey === key) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc") // BUG: reads stale sortDir
-    } else {
-      setSortKey(key)
-      setSortDir("asc")
-    }
+    setSortKey((prevKey) => {
+      if (prevKey === key) {
+        setSortDir((prevDir) => (prevDir === "asc" ? "desc" : "asc"))
+        return prevKey
+      } else {
+        setSortDir("asc")
+        return key
+      }
+    })
   }
 
   const sorted = sortKey
