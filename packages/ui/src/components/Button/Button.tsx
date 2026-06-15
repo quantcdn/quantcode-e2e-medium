@@ -34,13 +34,15 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  if (iconOnly && !ariaLabel) {
+    console.warn("Button: iconOnly is true but no aria-label was provided. This button will have no accessible name.")
+  }
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={ariaLabel || (iconOnly ? "button" : undefined)}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}
