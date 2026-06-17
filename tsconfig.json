@@ -11,5 +11,5 @@
       "@e2e/utils": ["./packages/utils/src/index.ts"]
     }
   },
-  "include": ["packages/*/src/**/*", "packages/*/test/**/*", "apps/*/src/**/*"]
+  "include": ["*.d.ts", "packages/*/src/**/*", "packages/*/test/**/*", "apps/*/src/**/*"]
 }
