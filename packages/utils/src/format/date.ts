@@ -10,12 +10,7 @@
  * and rely on the locale to order them correctly.
  */
 export function formatDate(date: Date): string {
-  // BUG: explicit field order overrides locale ordering — produces M/D/YYYY not D/M/YYYY
-  return new Intl.DateTimeFormat("en-AU", {
-    month: "numeric",
-    day: "numeric",
-    year: "numeric",
-  }).format(date)
+  return new Intl.DateTimeFormat("en-AU", { dateStyle: "short" }).format(date)
 }
 
 export function formatDateTime(date: Date): string {
