@@ -25,18 +25,18 @@ type Props<T extends Record<string, unknown>> = {
  * so the toggle always reads the current value.
  */
 export function DataTable<T extends Record<string, unknown>>({ data, columns }: Props<T>) {
-  const [sortKey, setSortKey] = useState<keyof T | null>(null)
-  const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const [sort, setSort] = useState<{ key: keyof T | null; dir: SortDir }>({ key: null, dir: "asc" })
 
-  // BUG: stale closure — sortDir is captured at handler creation time
   const handleSort = (key: keyof T) => {
-    if (sortKey === key) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc") // BUG: reads stale sortDir
-    } else {
-      setSortKey(key)
-      setSortDir("asc")
-    }
+    setSort((prev) => {
+      if (prev.key === key) {
+        return { key, dir: prev.dir === "asc" ? "desc" : "asc" }
+      }
+      return { key, dir: "asc" }
+    })
   }
+
+  const { key: sortKey, dir: sortDir } = sort
 
   const sorted = sortKey
     ? [...data].sort((a, b) => {
