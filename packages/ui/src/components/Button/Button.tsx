@@ -34,6 +34,12 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  if (iconOnly && !ariaLabel) {
+    console.warn(
+      "Button: icon-only buttons require an aria-label for accessibility (WCAG 4.1.2). " +
+        "Pass aria-label=\"<description>\" to this Button."
+    )
+  }
   return (
     <button
       className={`btn btn-${variant}`}
