@@ -27,11 +27,9 @@ type Props<T extends Record<string, unknown>> = {
 export function DataTable<T extends Record<string, unknown>>({ data, columns }: Props<T>) {
   const [sortKey, setSortKey] = useState<keyof T | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>("asc")
-
-  // BUG: stale closure — sortDir is captured at handler creation time
   const handleSort = (key: keyof T) => {
     if (sortKey === key) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc") // BUG: reads stale sortDir
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"))
     } else {
       setSortKey(key)
       setSortDir("asc")
