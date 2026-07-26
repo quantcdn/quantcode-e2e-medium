@@ -6,10 +6,11 @@
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
+    "types": ["bun-types"],
     "paths": {
       "@e2e/ui": ["./packages/ui/src/index.ts"],
       "@e2e/utils": ["./packages/utils/src/index.ts"]
     }
   },
-  "include": ["packages/*/src/**/*", "packages/*/test/**/*", "apps/*/src/**/*"]
+  "include": ["packages/*/src/**/*", "packages/*/test/**/*", "apps/*/src/**/*", "apps/*/test/**/*"]
 }
