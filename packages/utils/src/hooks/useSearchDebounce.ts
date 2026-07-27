@@ -2,12 +2,12 @@
  * Debounce a value — returns the value only after it has stopped changing
  * for `delay` milliseconds.
  *
- * NOTE: This hook was recently renamed from `useThrottle` to `useDebounce`.
- * Any code importing `useThrottle` from this package will break.
+ * NOTE: This hook was previously named `useThrottle`, then `useDebounce`.
+ * The public name is now `useSearchDebounce`.
  */
 import { useState, useEffect } from "react"
 
-export function useDebounce<T>(value: T, delay: number): T {
+export function useSearchDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value)
 
   useEffect(() => {
