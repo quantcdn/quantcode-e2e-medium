@@ -1,2 +1,6 @@
+# `environment = "happy-dom"` is a Jest/Vitest concept — Bun has no such [test]
+# option and silently ignores it, which left `document` undefined for the React
+# component tests. Registering happy-dom via a preload script is what actually
+# installs the DOM globals.
 [test]
-environment = "happy-dom"
+preload = ["./packages/ui/test/setup.ts"]
