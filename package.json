@@ -8,7 +8,7 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "bun test packages/utils/test packages/ui/test apps/web/test --preload ./packages/ui/test/setup.ts",
+    "test": "bun test packages/utils/test packages/ui/test apps/web/test",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
