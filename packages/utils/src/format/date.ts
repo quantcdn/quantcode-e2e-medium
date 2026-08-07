@@ -1,21 +1,25 @@
 /**
  * Date formatting utilities.
  *
- * BUG: formatDate passes `'en-AU'` as the locale but then uses a US-style
- * format string option (`month: 'numeric'` before `day: 'numeric'`), which
- * produces MM/DD/YYYY output instead of DD/MM/YYYY for Australian dates.
+ * Australian date format is day-first: D/MM/YYYY.
  *
- * Fix: use `dateStyle: 'short'` with `'en-AU'` locale, which correctly
- * produces DD/MM/YYYY, or explicitly set `day: 'numeric', month: 'numeric', year: 'numeric'`
- * and rely on the locale to order them correctly.
+ * Note: `Intl.DateTimeFormat` ignores the order of the option properties — the
+ * locale's CLDR pattern decides field ordering, so `en-AU` is already day-first.
+ * However ICU silently upgrades `day: "numeric"` to `2-digit` for `en-AU`,
+ * producing a zero-padded "01/03/2024". `formatToParts` is used to strip that
+ * leading zero from the day while keeping the month zero-padded and the year at
+ * four digits — `dateStyle: "short"` would truncate the year to two digits,
+ * which is ambiguous for record keeping.
  */
 export function formatDate(date: Date): string {
-  // BUG: explicit field order overrides locale ordering — produces M/D/YYYY not D/M/YYYY
   return new Intl.DateTimeFormat("en-AU", {
-    month: "numeric",
     day: "numeric",
+    month: "2-digit",
     year: "numeric",
-  }).format(date)
+  })
+    .formatToParts(date)
+    .map((part) => (part.type === "day" ? String(Number(part.value)) : part.value))
+    .join("")
 }
 
 export function formatDateTime(date: Date): string {
