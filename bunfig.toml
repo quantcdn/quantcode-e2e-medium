@@ -1,2 +1,6 @@
 [test]
-environment = "happy-dom"
+# `preload` (not `environment`) is the supported Bun key — `environment` is
+# Jest/Vitest syntax and is silently ignored. Bun reads bunfig.toml from the
+# CWD only, so nested package bunfigs are not picked up when running from the
+# repo root; the DOM setup must be registered here. Path is relative to this file.
+preload = ["./packages/ui/test/setup.ts"]
