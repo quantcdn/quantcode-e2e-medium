@@ -1,2 +1,4 @@
 [test]
-environment = "happy-dom"
+# `environment = "happy-dom"` is Vitest/Jest syntax and is silently ignored by Bun.
+# The DOM must be registered via a preload script instead.
+preload = ["./packages/ui/test/setup.ts"]
