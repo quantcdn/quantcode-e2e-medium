@@ -1,2 +1,6 @@
 [test]
-environment = "happy-dom"
+# Registers happy-dom globals so React component tests have a DOM.
+# Bun resolves bunfig.toml relative to the CWD, so this path is root-relative and
+# only applies when running `bun test` from the repo root. packages/ui/bunfig.toml
+# covers the standalone `cd packages/ui && bun test` workflow.
+preload = ["./packages/ui/test/setup.ts"]
