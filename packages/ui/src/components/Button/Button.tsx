@@ -4,8 +4,8 @@ type Variant = "primary" | "secondary" | "danger"
 
 type Props = {
   children?: React.ReactNode
-  /** Icon-only button — renders without visible text. Requires aria-label for accessibility. */
   icon?: React.ReactNode
+  /** Renders without visible text — requires `aria-label` for accessibility. */
   iconOnly?: boolean
   variant?: Variant
   disabled?: boolean
@@ -17,13 +17,11 @@ type Props = {
 /**
  * Button component.
  *
- * BUG: When `iconOnly` is true, the button renders without visible text.
- * An `aria-label` is required for screen reader accessibility (WCAG 2.1 SC 4.1.2),
- * but the component does not enforce or warn about its absence.
- *
- * The test in Button.test.tsx checks that an icon-only button has an accessible name.
- * Fix: throw/warn in development when `iconOnly && !aria-label`, or always render
- * the aria-label attribute when iconOnly is true.
+ * An `iconOnly` button renders no visible text, so it has no accessible name unless one
+ * is supplied. `aria-label` is therefore required when `iconOnly` is true
+ * (WCAG 2.2 SC 4.1.2 Name, Role, Value). When it is omitted we fall back to string
+ * `children` and warn in development — the fallback keeps the control reachable, but
+ * callers should always pass a meaningful label.
  */
 export function Button({
   children,
@@ -34,13 +32,22 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  const fallbackLabel = typeof children === "string" ? children : undefined
+  const resolvedLabel = iconOnly ? ariaLabel ?? fallbackLabel ?? "Button" : ariaLabel
+
+  if (process.env.NODE_ENV !== "production" && iconOnly && !ariaLabel && !fallbackLabel) {
+    console.warn(
+      "Button: `iconOnly` requires an `aria-label` so screen readers can announce a " +
+        "meaningful name (WCAG 2.2 SC 4.1.2). Falling back to \"Button\".",
+    )
+  }
+
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={resolvedLabel}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}
