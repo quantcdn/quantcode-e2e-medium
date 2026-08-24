@@ -1,2 +1,5 @@
 [test]
-environment = "happy-dom"
+# Register the happy-dom globals (document, window, ...) before any test runs so
+# @testing-library/react can render components. Path is relative to this file,
+# which is the repo root — the directory `bun test` is run from.
+preload = ["./packages/ui/test/setup.ts"]
