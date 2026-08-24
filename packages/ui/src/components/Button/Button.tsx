@@ -14,16 +14,17 @@ type Props = {
   "aria-label"?: string
 }
 
+/** Fallback accessible name for an icon-only button with no explicit aria-label. */
+const ICON_ONLY_FALLBACK_LABEL = "Button"
+
 /**
  * Button component.
  *
- * BUG: When `iconOnly` is true, the button renders without visible text.
- * An `aria-label` is required for screen reader accessibility (WCAG 2.1 SC 4.1.2),
- * but the component does not enforce or warn about its absence.
- *
- * The test in Button.test.tsx checks that an icon-only button has an accessible name.
- * Fix: throw/warn in development when `iconOnly && !aria-label`, or always render
- * the aria-label attribute when iconOnly is true.
+ * An `aria-label` passed by the caller is always forwarded to the underlying
+ * <button>. When `iconOnly` is true there is no visible text to act as the
+ * accessible name, so a label is mandatory under WCAG 2.2 SC 4.1.2 (Name, Role,
+ * Value). If the caller omits it we warn in development and fall back to a
+ * generic label so the control is never left without an accessible name.
  */
 export function Button({
   children,
@@ -34,13 +35,22 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  if (process.env.NODE_ENV !== "production" && iconOnly && !ariaLabel) {
+    console.warn(
+      "Button: `iconOnly` buttons must be given an `aria-label` to provide an " +
+        "accessible name (WCAG 2.2 SC 4.1.2). Falling back to " +
+        `"${ICON_ONLY_FALLBACK_LABEL}".`,
+    )
+  }
+
+  const accessibleLabel = ariaLabel ?? (iconOnly ? ICON_ONLY_FALLBACK_LABEL : undefined)
+
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={accessibleLabel}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}
