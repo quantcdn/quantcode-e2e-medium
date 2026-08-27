@@ -6,6 +6,12 @@
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
+    // Bun's `bun:test` module is declared by bun-types (an installed devDependency).
+    // Naming `types` explicitly turns OFF automatic inclusion of every other
+    // node_modules/@types/* package. That is harmless here: @types/react is pulled
+    // in via the explicit `import ... from "react"` in each file rather than relying
+    // on global auto-inclusion, so React prop type-checking is unaffected.
+    "types": ["bun-types"],
     "paths": {
       "@e2e/ui": ["./packages/ui/src/index.ts"],
       "@e2e/utils": ["./packages/utils/src/index.ts"]
