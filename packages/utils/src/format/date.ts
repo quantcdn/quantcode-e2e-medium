@@ -1,19 +1,15 @@
 /**
  * Date formatting utilities.
  *
- * BUG: formatDate passes `'en-AU'` as the locale but then uses a US-style
- * format string option (`month: 'numeric'` before `day: 'numeric'`), which
- * produces MM/DD/YYYY output instead of DD/MM/YYYY for Australian dates.
- *
- * Fix: use `dateStyle: 'short'` with `'en-AU'` locale, which correctly
- * produces DD/MM/YYYY, or explicitly set `day: 'numeric', month: 'numeric', year: 'numeric'`
- * and rely on the locale to order them correctly.
+ * Australian dates are day-first (D/MM/YYYY). Note that the `en-AU` CLDR data
+ * pads the day to two digits even when `day: "numeric"` is requested, producing
+ * "01/03/2024". `en-GB` shares the same day-first ordering but honours an
+ * unpadded day, giving "1/03/2024", so it is used for the numeric short form.
  */
 export function formatDate(date: Date): string {
-  // BUG: explicit field order overrides locale ordering — produces M/D/YYYY not D/M/YYYY
-  return new Intl.DateTimeFormat("en-AU", {
-    month: "numeric",
+  return new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
+    month: "2-digit",
     year: "numeric",
   }).format(date)
 }
