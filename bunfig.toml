@@ -1,2 +1,7 @@
 [test]
 environment = "happy-dom"
+# `environment` alone is not sufficient on Bun 1.4 — the DOM globals come from
+# packages/ui/test/setup.ts calling GlobalRegistrator.register(). bunfig.toml is
+# resolved from the CWD only (no upward walk, no merging of per-package configs),
+# so packages/ui/bunfig.toml is not honoured when `bun test` runs from the root.
+preload = ["./packages/ui/test/setup.ts"]
