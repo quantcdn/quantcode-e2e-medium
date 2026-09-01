@@ -17,13 +17,11 @@ type Props = {
 /**
  * Button component.
  *
- * BUG: When `iconOnly` is true, the button renders without visible text.
- * An `aria-label` is required for screen reader accessibility (WCAG 2.1 SC 4.1.2),
- * but the component does not enforce or warn about its absence.
- *
- * The test in Button.test.tsx checks that an icon-only button has an accessible name.
- * Fix: throw/warn in development when `iconOnly && !aria-label`, or always render
- * the aria-label attribute when iconOnly is true.
+ * An icon-only button has no visible text, so it must carry a programmatic
+ * accessible name to satisfy WCAG 2.2 SC 4.1.2 (Name, Role, Value) and
+ * SC 2.5.3 (Label in Name). The `aria-label` is always applied when provided,
+ * and icon-only buttons fall back to a generic label (plus a development
+ * warning) so they are never left completely unnamed.
  */
 export function Button({
   children,
@@ -34,15 +32,37 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  if (iconOnly && !ariaLabel && process.env.NODE_ENV !== "production") {
+    console.warn(
+      "Button: `iconOnly` buttons require an `aria-label` to provide an accessible name (WCAG 2.2 SC 4.1.2).",
+    )
+  }
+
+  const accessibleName = ariaLabel ?? (iconOnly ? "Button" : undefined)
+
+  // Children are only rendered when the button is not icon-only, so they can
+  // only contribute a visible name in that case.
+  const hasVisibleText =
+    !iconOnly && children != null && children !== false && children !== ""
+
+  // The icon counts as decorative only when the button is already named by
+  // something else — an aria-label, or visible text. When the icon is the sole
+  // content and there is no label, it must stay exposed so it can supply the
+  // accessible name, otherwise the button would have none (WCAG 2.2 SC 4.1.2).
+  const iconIsDecorative = accessibleName !== undefined || hasVisibleText
+
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={accessibleName}
     >
-      {icon && <span className="btn-icon">{icon}</span>}
+      {icon && (
+        <span className="btn-icon" aria-hidden={iconIsDecorative || undefined}>
+          {icon}
+        </span>
+      )}
       {!iconOnly && children}
     </button>
   )

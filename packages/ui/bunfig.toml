@@ -1,2 +1,4 @@
 [test]
+# Used when running `bun test` from within packages/ui (see root bunfig.toml
+# for the equivalent wiring when running from the repo root).
 preload = ["./test/setup.ts"]
