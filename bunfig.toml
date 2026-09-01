@@ -1,2 +1,5 @@
 [test]
-environment = "happy-dom"
+# Bun has no `environment` option (that is Jest/Vitest syntax) — a DOM must be
+# registered via a preload script. This runs before every test file so
+# `document`/`window` exist for the React component tests in packages/ui.
+preload = ["./packages/ui/test/setup.ts"]
