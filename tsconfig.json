@@ -9,7 +9,8 @@
     "paths": {
       "@e2e/ui": ["./packages/ui/src/index.ts"],
       "@e2e/utils": ["./packages/utils/src/index.ts"]
-    }
+    },
+    "types": ["bun-types"]
   },
   "include": ["packages/*/src/**/*", "packages/*/test/**/*", "apps/*/src/**/*"]
 }
