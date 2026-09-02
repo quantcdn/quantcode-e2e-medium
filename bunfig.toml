@@ -1,2 +1,4 @@
 [test]
-environment = "happy-dom"
+# Bun has no `[test].environment` switch — a DOM is installed by preloading a
+# module that calls happy-dom's GlobalRegistrator.
+preload = ["./packages/ui/test/setup.ts"]
