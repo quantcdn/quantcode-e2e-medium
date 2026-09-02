@@ -16,22 +16,19 @@ type Props<T extends Record<string, unknown>> = {
 /**
  * DataTable with client-side sorting.
  *
- * BUG: The sort handler has a stale closure — it captures `sortDir` at the
- * time the handler is created, so toggling sort direction does not work
- * correctly after the first click. The second click always sorts in the same
- * direction as the first.
- *
- * Fix: use the functional form of setState — `setSortDir(prev => ...)` —
- * so the toggle always reads the current value.
+ * The sort handler previously captured `sortDir` in a stale closure, so
+ * toggling the direction only worked on the first click. It now uses the
+ * functional form of setState — `setSortDir(prev => ...)` — which always reads
+ * the current value, so repeated clicks on the same column toggle correctly
+ * between ascending and descending.
  */
 export function DataTable<T extends Record<string, unknown>>({ data, columns }: Props<T>) {
   const [sortKey, setSortKey] = useState<keyof T | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>("asc")
 
-  // BUG: stale closure — sortDir is captured at handler creation time
   const handleSort = (key: keyof T) => {
     if (sortKey === key) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc") // BUG: reads stale sortDir
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"))
     } else {
       setSortKey(key)
       setSortDir("asc")
