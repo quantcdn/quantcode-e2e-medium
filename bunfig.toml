@@ -1,2 +1,6 @@
 [test]
-environment = "happy-dom"
+# Bun has no `environment` setting — a DOM must be registered explicitly.
+# packages/ui/test/setup.ts registers happy-dom via GlobalRegistrator, so it is
+# preloaded here to make `document` available to the React component tests when
+# `bun test` is run from the repository root.
+preload = ["./packages/ui/test/setup.ts"]
