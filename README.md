@@ -2,7 +2,7 @@
 
 **Tier 3 corpus** for the QuantCode autonomous agent e2e harness.
 
-A medium-sized TypeScript monorepo with a React component library, shared utilities, and a Next.js-style web app. Contains intentional bugs spanning multiple packages.
+A medium-sized TypeScript monorepo with a React component library, shared utilities, and a Next.js-style web app.
 
 ## Structure
 
@@ -17,12 +17,21 @@ apps/
 ## Running tests
 
 ```bash
-bun test --recursive
+bun test          # all packages, from the repo root
+npx tsc --noEmit  # typecheck
 ```
 
-## Known issues (intentional — for agent testing)
+The root `bunfig.toml` preloads `packages/ui/test/setup.ts`, which registers
+happy-dom globals so React component tests have a `document`.
 
-1. **`packages/utils/src/format/date.ts`** — `formatDate` produces US-style dates instead of AU-style
-2. **`packages/ui/src/components/Button/Button.tsx`** — icon-only button missing `aria-label` attribute (WCAG 4.1.2)
-3. **`packages/ui/src/components/DataTable/DataTable.tsx`** — stale closure in sort handler
-4. **`apps/web/src/lib/api.ts`** — imports `useThrottle` which was renamed to `useDebounce`
+## Corpus history
+
+This corpus originally shipped with four intentional cross-package bugs, all of
+which have been fixed:
+
+1. **`packages/utils/src/format/date.ts`** — `formatDate` produced US-style dates instead of AU-style
+2. **`packages/ui/src/components/Button/Button.tsx`** — icon-only button missing `aria-label` (WCAG 4.1.2)
+3. **`packages/ui/src/components/DataTable/DataTable.tsx`** — stale closure in the sort handler
+4. **`apps/web/src/lib/api.ts`** — imported `useThrottle`, which was renamed to `useDebounce`
+
+To restore the original buggy state, check out the initial commit.

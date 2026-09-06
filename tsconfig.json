@@ -6,6 +6,10 @@
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
+    // Provides the `bun:test` module declaration. Listing `types` explicitly
+    // disables automatic @types/* inclusion, so any ambient-only @types package
+    // added later must be appended here (@types/react resolves via import).
+    "types": ["bun-types"],
     "paths": {
       "@e2e/ui": ["./packages/ui/src/index.ts"],
       "@e2e/utils": ["./packages/utils/src/index.ts"]
