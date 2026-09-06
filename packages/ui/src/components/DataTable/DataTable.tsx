@@ -13,37 +13,39 @@ type Props<T extends Record<string, unknown>> = {
   columns: Column<T>[]
 }
 
+type SortState<T> = {
+  key: keyof T | null
+  dir: SortDir
+}
+
 /**
  * DataTable with client-side sorting.
  *
- * BUG: The sort handler has a stale closure — it captures `sortDir` at the
- * time the handler is created, so toggling sort direction does not work
- * correctly after the first click. The second click always sorts in the same
- * direction as the first.
+ * Sort key and direction are held in a single state atom so the functional
+ * updater sees both fields as committed. Splitting them meant the direction
+ * updater compared against a render-scoped key, which went stale if the
+ * handler ran more than once in a single batched flush.
  *
- * Fix: use the functional form of setState — `setSortDir(prev => ...)` —
- * so the toggle always reads the current value.
+ * Sortable headers render a real `<button>` so sorting is keyboard operable
+ * (WCAG 2.2 SC 2.1.1 Keyboard).
  */
 export function DataTable<T extends Record<string, unknown>>({ data, columns }: Props<T>) {
-  const [sortKey, setSortKey] = useState<keyof T | null>(null)
-  const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const [sort, setSort] = useState<SortState<T>>({ key: null, dir: "asc" })
 
-  // BUG: stale closure — sortDir is captured at handler creation time
   const handleSort = (key: keyof T) => {
-    if (sortKey === key) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc") // BUG: reads stale sortDir
-    } else {
-      setSortKey(key)
-      setSortDir("asc")
-    }
+    setSort((prev) => ({
+      key,
+      dir: prev.key === key && prev.dir === "asc" ? "desc" : "asc",
+    }))
   }
 
+  const sortKey = sort.key
   const sorted = sortKey
     ? [...data].sort((a, b) => {
         const av = a[sortKey]
         const bv = b[sortKey]
         const cmp = av < bv ? -1 : av > bv ? 1 : 0
-        return sortDir === "asc" ? cmp : -cmp
+        return sort.dir === "asc" ? cmp : -cmp
       })
     : data
 
@@ -54,10 +56,16 @@ export function DataTable<T extends Record<string, unknown>>({ data, columns }: 
           {columns.map((col) => (
             <th
               key={String(col.key)}
-              onClick={col.sortable ? () => handleSort(col.key) : undefined}
-              aria-sort={sortKey === col.key ? (sortDir === "asc" ? "ascending" : "descending") : undefined}
+              scope="col"
+              aria-sort={sort.key === col.key ? (sort.dir === "asc" ? "ascending" : "descending") : undefined}
             >
-              {col.label}
+              {col.sortable ? (
+                <button type="button" className="th-sort" onClick={() => handleSort(col.key)}>
+                  {col.label}
+                </button>
+              ) : (
+                col.label
+              )}
             </th>
           ))}
         </tr>
