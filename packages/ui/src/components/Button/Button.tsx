@@ -15,15 +15,32 @@ type Props = {
 }
 
 /**
+ * Derives an accessible name from string-like children. Returns undefined when
+ * the children contain no usable text (elements, null, booleans, whitespace).
+ */
+function textFromChildren(children: React.ReactNode): string | undefined {
+  if (typeof children === "string" || typeof children === "number") {
+    const text = String(children).trim()
+    return text.length > 0 ? text : undefined
+  }
+  if (Array.isArray(children)) {
+    const text = children
+      .map((child) => textFromChildren(child as React.ReactNode))
+      .filter((part): part is string => part !== undefined)
+      .join(" ")
+      .trim()
+    return text.length > 0 ? text : undefined
+  }
+  return undefined
+}
+
+/**
  * Button component.
  *
- * BUG: When `iconOnly` is true, the button renders without visible text.
- * An `aria-label` is required for screen reader accessibility (WCAG 2.1 SC 4.1.2),
- * but the component does not enforce or warn about its absence.
- *
- * The test in Button.test.tsx checks that an icon-only button has an accessible name.
- * Fix: throw/warn in development when `iconOnly && !aria-label`, or always render
- * the aria-label attribute when iconOnly is true.
+ * An icon-only button renders no visible text, so it needs an explicit
+ * `aria-label` to expose an accessible name (WCAG 2.2 SC 4.1.2). When one is not
+ * supplied, fall back to any text content in `children` before resorting to the
+ * generic "button" label, which conveys nothing beyond the element's own role.
  */
 export function Button({
   children,
@@ -39,8 +56,7 @@ export function Button({
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={ariaLabel ?? (iconOnly ? (textFromChildren(children) ?? "button") : undefined)}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}
