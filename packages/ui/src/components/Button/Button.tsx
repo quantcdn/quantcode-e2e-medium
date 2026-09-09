@@ -17,13 +17,13 @@ type Props = {
 /**
  * Button component.
  *
- * BUG: When `iconOnly` is true, the button renders without visible text.
- * An `aria-label` is required for screen reader accessibility (WCAG 2.1 SC 4.1.2),
- * but the component does not enforce or warn about its absence.
+ * Icon-only buttons render no visible text, so they need an explicit
+ * `aria-label` to expose an accessible name (WCAG 2.2 SC 4.1.2 Name, Role,
+ * Value). When one is not supplied we fall back to string `children` if
+ * present, then to a generic label, and warn in development.
  *
- * The test in Button.test.tsx checks that an icon-only button has an accessible name.
- * Fix: throw/warn in development when `iconOnly && !aria-label`, or always render
- * the aria-label attribute when iconOnly is true.
+ * For text buttons the resolved label is normally `undefined`, so React omits
+ * the attribute entirely and the visible text remains the accessible name.
  */
 export function Button({
   children,
@@ -34,13 +34,25 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  const textChild = typeof children === "string" && children.length > 0 ? children : undefined
+  const resolvedLabel = iconOnly ? (ariaLabel ?? textChild ?? "Button") : ariaLabel
+
+  if (
+    typeof process !== "undefined" &&
+    process.env.NODE_ENV !== "production" &&
+    iconOnly &&
+    !ariaLabel &&
+    !textChild
+  ) {
+    console.warn("Button: `iconOnly` requires an explicit `aria-label` to meet WCAG 2.2 SC 4.1.2.")
+  }
+
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={resolvedLabel}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}

@@ -16,26 +16,28 @@ type Props<T extends Record<string, unknown>> = {
 /**
  * DataTable with client-side sorting.
  *
- * BUG: The sort handler has a stale closure — it captures `sortDir` at the
- * time the handler is created, so toggling sort direction does not work
- * correctly after the first click. The second click always sorts in the same
- * direction as the first.
+ * Clicking a sortable column header sorts by it ascending; clicking the same
+ * header again toggles the direction.
  *
- * Fix: use the functional form of setState — `setSortDir(prev => ...)` —
- * so the toggle always reads the current value.
+ * Sort key and direction are held in a single state object and updated through
+ * one functional updater. They must be derived together: deciding whether a
+ * click is a "new column" or a "toggle" depends on the current key, so reading
+ * either value from the render closure would drop an update whenever two
+ * clicks are batched into the same render pass.
  */
-export function DataTable<T extends Record<string, unknown>>({ data, columns }: Props<T>) {
-  const [sortKey, setSortKey] = useState<keyof T | null>(null)
-  const [sortDir, setSortDir] = useState<SortDir>("asc")
+type SortState<T> = {
+  key: keyof T | null
+  dir: SortDir
+}
 
-  // BUG: stale closure — sortDir is captured at handler creation time
+export function DataTable<T extends Record<string, unknown>>({ data, columns }: Props<T>) {
+  const [sort, setSort] = useState<SortState<T>>({ key: null, dir: "asc" })
+  const { key: sortKey, dir: sortDir } = sort
+
   const handleSort = (key: keyof T) => {
-    if (sortKey === key) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc") // BUG: reads stale sortDir
-    } else {
-      setSortKey(key)
-      setSortDir("asc")
-    }
+    setSort((prev) =>
+      prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" },
+    )
   }
 
   const sorted = sortKey
