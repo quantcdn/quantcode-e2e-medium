@@ -6,6 +6,10 @@
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
+    // bun-types does not live under node_modules/@types/, so it must be listed
+    // explicitly. NOTE: setting "types" disables automatic inclusion of all
+    // other @types/* packages — add any further ones to this array.
+    "types": ["bun-types"],
     "paths": {
       "@e2e/ui": ["./packages/ui/src/index.ts"],
       "@e2e/utils": ["./packages/utils/src/index.ts"]
