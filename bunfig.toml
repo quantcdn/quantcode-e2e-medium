@@ -1,2 +1,4 @@
 [test]
-environment = "happy-dom"
+# Registers happy-dom globals (document, window) for React component tests.
+# NOTE: bun has no `[test].environment` option — preload is the supported mechanism.
+preload = ["./packages/ui/test/setup.ts"]
