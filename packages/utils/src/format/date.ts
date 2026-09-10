@@ -1,19 +1,15 @@
 /**
  * Date formatting utilities.
  *
- * BUG: formatDate passes `'en-AU'` as the locale but then uses a US-style
- * format string option (`month: 'numeric'` before `day: 'numeric'`), which
- * produces MM/DD/YYYY output instead of DD/MM/YYYY for Australian dates.
- *
- * Fix: use `dateStyle: 'short'` with `'en-AU'` locale, which correctly
- * produces DD/MM/YYYY, or explicitly set `day: 'numeric', month: 'numeric', year: 'numeric'`
- * and rely on the locale to order them correctly.
+ * Australian date convention is day-before-month (D/MM/YYYY) with no
+ * zero-padding on the day. Bun's bundled ICU data for `en-AU` zero-pads the
+ * day even when `day: 'numeric'` is requested, so `en-GB` — which shares the
+ * same day/month/year ordering — is used to get an unpadded day.
  */
 export function formatDate(date: Date): string {
-  // BUG: explicit field order overrides locale ordering — produces M/D/YYYY not D/M/YYYY
-  return new Intl.DateTimeFormat("en-AU", {
-    month: "numeric",
+  return new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
+    month: "2-digit",
     year: "numeric",
   }).format(date)
 }
