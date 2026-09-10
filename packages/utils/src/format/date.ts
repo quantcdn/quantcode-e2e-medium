@@ -1,21 +1,27 @@
 /**
  * Date formatting utilities.
  *
- * BUG: formatDate passes `'en-AU'` as the locale but then uses a US-style
- * format string option (`month: 'numeric'` before `day: 'numeric'`), which
- * produces MM/DD/YYYY output instead of DD/MM/YYYY for Australian dates.
+ * Australian date convention is day-first (D/MM/YYYY), so field ordering and
+ * separators are taken from the `en-AU` locale rather than hard-coded.
+ */
+
+const DATE_FORMAT = new Intl.DateTimeFormat("en-AU", {
+  day: "numeric",
+  month: "2-digit",
+  year: "numeric",
+})
+
+/**
+ * Format a date as day-first D/MM/YYYY, e.g. 1 March 2024 -> "1/03/2024".
  *
- * Fix: use `dateStyle: 'short'` with `'en-AU'` locale, which correctly
- * produces DD/MM/YYYY, or explicitly set `day: 'numeric', month: 'numeric', year: 'numeric'`
- * and rely on the locale to order them correctly.
+ * The locale supplies the field order and separators. Parts are reassembled so
+ * that `day: "numeric"` is honoured (the en-AU pattern otherwise zero-pads the
+ * day), giving an unpadded day with a zero-padded month and four-digit year.
  */
 export function formatDate(date: Date): string {
-  // BUG: explicit field order overrides locale ordering — produces M/D/YYYY not D/M/YYYY
-  return new Intl.DateTimeFormat("en-AU", {
-    month: "numeric",
-    day: "numeric",
-    year: "numeric",
-  }).format(date)
+  return DATE_FORMAT.formatToParts(date)
+    .map((part) => (part.type === "day" ? String(Number(part.value)) : part.value))
+    .join("")
 }
 
 export function formatDateTime(date: Date): string {
