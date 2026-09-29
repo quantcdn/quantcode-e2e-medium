@@ -1,2 +1,5 @@
 [test]
-environment = "happy-dom"
+# `bun test` has no `environment` option — the DOM is registered via a preload.
+# packages/ui/test/setup.ts calls @happy-dom/global-registrator so component
+# tests have `document`/`window` available.
+preload = ["./packages/ui/test/setup.ts"]
