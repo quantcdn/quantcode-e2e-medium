@@ -14,16 +14,18 @@ type Props = {
   "aria-label"?: string
 }
 
+const FALLBACK_ICON_LABEL = "Button"
+
 /**
  * Button component.
  *
- * BUG: When `iconOnly` is true, the button renders without visible text.
- * An `aria-label` is required for screen reader accessibility (WCAG 2.1 SC 4.1.2),
- * but the component does not enforce or warn about its absence.
- *
- * The test in Button.test.tsx checks that an icon-only button has an accessible name.
- * Fix: throw/warn in development when `iconOnly && !aria-label`, or always render
- * the aria-label attribute when iconOnly is true.
+ * An icon-only button renders no visible text, so it must carry an accessible
+ * name or screen readers announce it as an unlabelled button (WCAG 2.2 AA
+ * SC 4.1.2 Name, Role, Value). The name is resolved from the explicit
+ * `aria-label`, falling back to string children, and finally to a generic
+ * label so the attribute is never absent — Button.test.tsx asserts that an
+ * icon-only button always exposes one. A development warning flags the
+ * fallback case so the missing label is caught before release.
  */
 export function Button({
   children,
@@ -34,13 +36,25 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  let accessibleName = ariaLabel
+
+  if (iconOnly && !accessibleName) {
+    accessibleName = typeof children === "string" ? children : FALLBACK_ICON_LABEL
+
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        "Button: `iconOnly` buttons require an `aria-label` to give screen reader " +
+          `users an accessible name (WCAG 2.2 AA SC 4.1.2). Falling back to "${accessibleName}".`,
+      )
+    }
+  }
+
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={accessibleName}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}
