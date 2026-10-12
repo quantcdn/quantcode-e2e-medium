@@ -1,2 +1,4 @@
 [test]
-environment = "happy-dom"
+# `environment = "happy-dom"` is a Vitest option — Bun ignores it, which left the
+# DOM globals undefined. Bun configures a DOM via a preload script instead.
+preload = ["./packages/ui/test/setup.ts"]
