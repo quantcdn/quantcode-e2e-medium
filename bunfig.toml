@@ -1,2 +1,6 @@
 [test]
-environment = "happy-dom"
+# Bun has no built-in "environment" switch — a DOM is installed by preloading
+# happy-dom's global registrator before any test file runs. The setup module
+# lives in packages/ui but must be preloaded for the whole workspace so that
+# component tests work when `bun test` is run from the repo root.
+preload = ["./packages/ui/test/setup.ts"]
