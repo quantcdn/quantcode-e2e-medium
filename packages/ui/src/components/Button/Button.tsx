@@ -17,14 +17,21 @@ type Props = {
 /**
  * Button component.
  *
- * BUG: When `iconOnly` is true, the button renders without visible text.
- * An `aria-label` is required for screen reader accessibility (WCAG 2.1 SC 4.1.2),
- * but the component does not enforce or warn about its absence.
- *
- * The test in Button.test.tsx checks that an icon-only button has an accessible name.
- * Fix: throw/warn in development when `iconOnly && !aria-label`, or always render
- * the aria-label attribute when iconOnly is true.
+ * Icon-only buttons render without visible text, so they must expose an
+ * accessible name via `aria-label` (WCAG 2.2 SC 4.1.2 Name, Role, Value).
+ * When `iconOnly` is set we always emit an `aria-label`, falling back to the
+ * string content of `children` and then a generic label, and warn in
+ * development so the missing label is caught at the source.
  */
+const ICON_ONLY_FALLBACK_LABEL = "Button"
+
+function deriveIconOnlyLabel(ariaLabel: string | undefined, children: React.ReactNode): string {
+  if (ariaLabel) return ariaLabel
+  if (typeof children === "string" && children.trim()) return children.trim()
+  if (typeof children === "number") return String(children)
+  return ICON_ONLY_FALLBACK_LABEL
+}
+
 export function Button({
   children,
   icon,
@@ -34,13 +41,22 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  const resolvedLabel = iconOnly ? deriveIconOnlyLabel(ariaLabel, children) : ariaLabel
+
+  if (iconOnly && !ariaLabel && process.env.NODE_ENV !== "production") {
+    console.warn(
+      "[Button] An icon-only Button was rendered without an `aria-label`. " +
+        "Provide one so screen reader users get a meaningful name (WCAG 2.2 SC 4.1.2). " +
+        `Falling back to "${resolvedLabel}".`,
+    )
+  }
+
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={resolvedLabel}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}
