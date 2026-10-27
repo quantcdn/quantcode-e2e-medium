@@ -39,6 +39,7 @@ export function Button({
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
+      aria-label={ariaLabel ?? (iconOnly ? "" : undefined)}
       // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
       // The component should enforce aria-label for icon-only buttons
     >
