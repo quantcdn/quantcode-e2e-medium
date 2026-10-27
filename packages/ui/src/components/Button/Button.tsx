@@ -17,14 +17,15 @@ type Props = {
 /**
  * Button component.
  *
- * BUG: When `iconOnly` is true, the button renders without visible text.
- * An `aria-label` is required for screen reader accessibility (WCAG 2.1 SC 4.1.2),
- * but the component does not enforce or warn about its absence.
- *
- * The test in Button.test.tsx checks that an icon-only button has an accessible name.
- * Fix: throw/warn in development when `iconOnly && !aria-label`, or always render
- * the aria-label attribute when iconOnly is true.
+ * An icon-only button renders no visible text, so it must expose an
+ * `aria-label` to have an accessible name (WCAG 2.2 SC 4.1.2 Name, Role,
+ * Value). When `iconOnly` is set without an explicit label we fall back to the
+ * string children, then to a generic name, so the control is never anonymous
+ * to assistive technology — and warn outside production so the omission gets
+ * fixed at the call site.
  */
+const ICON_ONLY_FALLBACK_LABEL = "Button"
+
 export function Button({
   children,
   icon,
@@ -34,15 +35,31 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  let accessibleName = ariaLabel
+
+  if (iconOnly && !accessibleName) {
+    accessibleName = typeof children === "string" && children.trim() !== "" ? children : ICON_ONLY_FALLBACK_LABEL
+
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        "Button: `iconOnly` buttons require an explicit `aria-label` to meet WCAG 2.2 SC 4.1.2. " +
+          `Falling back to "${accessibleName}".`,
+      )
+    }
+  }
+
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={accessibleName}
     >
-      {icon && <span className="btn-icon">{icon}</span>}
+      {icon && (
+        <span className="btn-icon" aria-hidden={iconOnly || undefined}>
+          {icon}
+        </span>
+      )}
       {!iconOnly && children}
     </button>
   )
