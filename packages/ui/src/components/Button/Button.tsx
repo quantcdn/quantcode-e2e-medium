@@ -34,8 +34,12 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  if (iconOnly && !ariaLabel && process.env.NODE_ENV !== "production") {
+    console.warn("Button: iconOnly buttons require an aria-label (WCAG 4.1.2)")
+  }
   return (
     <button
+      aria-label={iconOnly ? (ariaLabel ?? "") : ariaLabel}
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
