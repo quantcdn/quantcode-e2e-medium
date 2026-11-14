@@ -11,11 +11,14 @@
  */
 export function formatDate(date: Date): string {
   // BUG: explicit field order overrides locale ordering — produces M/D/YYYY not D/M/YYYY
-  return new Intl.DateTimeFormat("en-AU", {
-    month: "numeric",
+  const parts = new Intl.DateTimeFormat("en-AU", {
     day: "numeric",
+    month: "2-digit",
     year: "numeric",
-  }).format(date)
+  }).formatToParts(date)
+  return parts
+    .map((p) => (p.type === "day" ? String(Number(p.value)) : p.value))
+    .join("")
 }
 
 export function formatDateTime(date: Date): string {
