@@ -5,6 +5,7 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "strict": true,
+    "types": ["bun-types"],
     "skipLibCheck": true,
     "paths": {
       "@e2e/ui": ["./packages/ui/src/index.ts"],
