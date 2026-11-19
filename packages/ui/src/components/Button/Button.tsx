@@ -17,9 +17,10 @@ type Props = {
 /**
  * Button component.
  *
- * When `iconOnly` is true, the button renders without visible text, so an
- * `aria-label` is required (WCAG 4.1.2). A dev-time warning is logged if it is
- * missing, and a generic fallback label is applied.
+ * When `iconOnly` is true, the button renders without visible text.
+ * An `aria-label` is required for screen reader accessibility (WCAG 2.2 SC 4.1.2).
+ * A development-only warning is logged when it is missing, and the label
+ * falls back to "Button".
  */
 export function Button({
   children,
@@ -30,15 +31,18 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
-  if (iconOnly && !ariaLabel && process.env.NODE_ENV !== "production") {
-    console.warn("Button: iconOnly buttons require an aria-label (WCAG 4.1.2)")
+  if (process.env.NODE_ENV !== "production" && iconOnly && !ariaLabel) {
+    console.warn(
+      "Button: `iconOnly` buttons require an `aria-label` for an accessible name (WCAG 4.1.2). Falling back to \"Button\".",
+    )
   }
+
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      aria-label={ariaLabel || (iconOnly ? "Button" : undefined)}
+      aria-label={ariaLabel ?? (iconOnly ? "Button" : undefined)}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}
