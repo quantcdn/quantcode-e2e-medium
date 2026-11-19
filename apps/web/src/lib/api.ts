@@ -22,5 +22,5 @@ export async function fetchPosts() {
 // Re-export formatting utilities used throughout the app
 export { formatDate, formatAUD }
 
-// Re-export the debounce hook (currently broken import)
+// Re-export the debounce hook
 export { useDebounce as useSearchDebounce }
