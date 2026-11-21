@@ -34,13 +34,17 @@ export function Button({
   onClick,
   "aria-label": ariaLabel,
 }: Props) {
+  let accessibleName = ariaLabel
+  if (iconOnly && !accessibleName) {
+    console.warn("Button: iconOnly buttons require an aria-label (WCAG 4.1.2)")
+    accessibleName = typeof children === "string" && children ? children : "Button"
+  }
   return (
     <button
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      // BUG: aria-label is not applied when iconOnly is true and no ariaLabel is passed
-      // The component should enforce aria-label for icon-only buttons
+      aria-label={accessibleName}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}
