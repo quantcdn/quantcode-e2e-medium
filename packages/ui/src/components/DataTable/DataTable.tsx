@@ -22,7 +22,7 @@ export function DataTable<T extends Record<string, unknown>>({ data, columns }: 
 
   const handleSort = (key: keyof T) => {
     if (sortKey === key) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"))
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"))
     } else {
       setSortKey(key)
       setSortDir("asc")
