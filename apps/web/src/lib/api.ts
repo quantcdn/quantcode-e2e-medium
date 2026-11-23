@@ -5,7 +5,6 @@
  * `useThrottle`), re-exported here as `useSearchDebounce`.
  */
 
-// BUG: useThrottle no longer exists — was renamed to useDebounce
 import { useDebounce } from "@e2e/utils"
 import { formatDate, formatAUD } from "@e2e/utils"
 
@@ -26,5 +25,5 @@ export async function fetchPosts() {
 // Re-export formatting utilities used throughout the app
 export { formatDate, formatAUD }
 
-// Re-export the debounce hook (currently broken import)
+// Re-export the debounce hook
 export { useDebounce as useSearchDebounce }
