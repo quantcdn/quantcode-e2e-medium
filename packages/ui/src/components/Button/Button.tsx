@@ -40,7 +40,7 @@ export function Button({
       className={`btn btn-${variant}`}
       disabled={disabled}
       onClick={onClick}
-      aria-label={ariaLabel || (iconOnly ? "Button" : undefined)}
+      aria-label={ariaLabel ?? (iconOnly ? "" : undefined)}
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {!iconOnly && children}

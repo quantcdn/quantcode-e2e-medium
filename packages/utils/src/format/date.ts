@@ -10,8 +10,8 @@ export function formatDate(date: Date): string {
     month: "2-digit",
     year: "numeric",
   }).formatToParts(date)
-  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? ""
-  return `${String(Number(get("day")))}/${get("month")}/${get("year")}`
+  const get = (t: string) => String(parts.find((p) => p.type === t)?.value ?? "")
+  return `${Number(get("day"))}/${get("month")}/${get("year")}`
 }
 
 export function formatDateTime(date: Date): string {
